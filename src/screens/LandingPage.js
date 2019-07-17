@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, StatusBar, Dimensions } from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
+import Icon from 'react-native-vector-icons/AntDesign'
 
 let { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -72,25 +73,130 @@ export default class App extends Component {
 			        	coordinate={ this.state.region }
 			        />
 				</MapView>
-				<View style={items.image}>
-					<Image source={{uri: 'https://i.pinimg.com/originals/32/02/c6/3202c6a860015bf19424333a13b23f38.jpg'}}/>
+				<View style={component.top}></View>
+				<View style={component.header}>
+					<View style={items.center}>
+						<View style={items.left}>
+							<TouchableOpacity style={items.listFriends} onPress={() => {this.props.navigation.openDrawer()}}>
+								<Text style={{textAlign: 'center', color: '#fff', fontFamily:'sans-serif-medium'}}>Friends</Text>
+							</TouchableOpacity>
+						</View>
+						<View style={items.titleHeader}></View>
+						<View style={items.right}>
+							<View style={items.itemsProfil}>
+								<Text style={{textAlign: 'left', color: '#fff', fontFamily:'sans-serif-medium'}}>Akbar</Text>
+							</View>
+						</View>
+					</View>
 				</View>
+				<View style={component.profile}>
+					<Image style={image.profile} source={{uri: 'https://i.pinimg.com/originals/32/02/c6/3202c6a860015bf19424333a13b23f38.jpg'}}/>
+				</View>
+				<TouchableOpacity style={component.fab} onPress={()=>this.props.navigation.navigate('Chat')}>
+					<Icon name="message1" size={25} color='#5ba4e5'/>
+				</TouchableOpacity>
 			</React.Fragment>
 		)
 	}
 }
 
 const items = StyleSheet.create({
-	image: {
-		position: 'absolute',
-		top: 0
+	title: {
+		fontSize: 20,
+		fontFamily: 'sans-serif-thin',
+		width: '100%',
+		textAlign: 'center',
+		paddingBottom: 80
+	},
+	left: {
+		flex: 3,
+		alignItems: 'center',
+		justifyContent: 'center',
+		width: '100%',
+		height: '100%',
+	},
+	center: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center'
+	},
+	right: {
+		flex: 3,
+		backgroundColor: '#5ba4e5',
+		width: '100%',
+		borderTopLeftRadius: 10,
+		borderBottomLeftRadius: 10,
+	},
+	titleHeader: {
+		color: '#5ba4e5',
+		fontSize: 17,
+		flex: 5,
+		textAlign: 'center',
+		fontFamily: 'sans-serif-medium'
+	},
+	listFriends: {
+		width: 100,
+		backgroundColor: '#5ba4e5',
+		height: 35,
+		justifyContent: 'center',
+		borderTopRightRadius: 10,
+		borderBottomRightRadius: 10,
+	},
+	itemsProfil: {
+		width: 100,
+		height: 35,
+		justifyContent: 'center',
+		paddingLeft: 5
 	}
 })
 
 const image = StyleSheet.create({
-	
+	profile: {
+		width: 50, 
+		height: 50, 
+		borderRadius: 50,
+		borderWidth: 1,
+		borderColor: '#5ba4e5'
+	}
 })
 
 const component = StyleSheet.create({
-	
+	top: {
+		position: 'absolute',
+		top: 0,
+		height: 30,
+		width: '100%',
+	},
+	header: {
+		position: 'absolute',
+		top: '4%',
+		height: 50,
+		width: '100%',
+		flexDirection: 'row',
+		borderBottomRightRadius: 100,
+		borderBottomLeftRadius: 100,
+	},
+	body: {
+		marginTop: 80,
+		width: '100%',
+	},
+	profile: {
+		position: 'absolute',
+		right: 3,
+		top: '4%',
+	},
+	fab: {
+		position: 'absolute', 
+        width: 58, 
+        height: 57, 
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center', 
+        right: 10, 
+        bottom: 30, 
+        backgroundColor: '#FFFCFC', 
+        borderRadius: 50, 
+        elevation: 3
+	}
 })

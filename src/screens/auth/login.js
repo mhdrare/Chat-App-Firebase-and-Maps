@@ -61,7 +61,7 @@ const text = StyleSheet.create({
 	textInput: {
 		backgroundColor: '#f5f5f1',
 		padding: 5,
-		paddingLeft: 20
+		paddingLeft: 20,
 	},
 	viewInput: {
 		width: '70%',
