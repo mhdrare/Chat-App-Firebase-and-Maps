@@ -40,6 +40,7 @@ export default class App extends Component {
 	        firebase.auth().signInWithEmailAndPassword(email, password)
 	        .then( async (result) => {
 	            await this.setState({error:'', loading:false});
+	            await firebase.database().ref('users'+ result.user.id)
 	            this.props.navigation.navigate('Home');
 	        })
 	        .catch(() => {
