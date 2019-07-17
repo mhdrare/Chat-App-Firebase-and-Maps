@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, StatusBar, Dimensions } from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
+import firebase from 'firebase'
 import Icon from 'react-native-vector-icons/AntDesign'
 
 let { width, height } = Dimensions.get('window');
@@ -15,6 +16,7 @@ export default class App extends Component {
 	  super(props);
 	
 	  this.state = {
+	  	currentUser: null,
 	  	region: {
 	  		latitude: LATITUDE,
 	  		longitude: LONGITUDE,
@@ -25,6 +27,9 @@ export default class App extends Component {
 	}
 
 	componentDidMount(){
+		const { currentUser } = firebase.auth()
+		this.setState({ currentUser })
+
 		StatusBar.setHidden(false)
 		navigator.geolocation.getCurrentPosition(
 			position => {
@@ -170,7 +175,7 @@ const component = StyleSheet.create({
 	},
 	header: {
 		position: 'absolute',
-		top: '4%',
+		top: 50,
 		height: 50,
 		width: '100%',
 		flexDirection: 'row',
@@ -184,7 +189,7 @@ const component = StyleSheet.create({
 	profile: {
 		position: 'absolute',
 		right: 3,
-		top: '4%',
+		top: 50,
 	},
 	fab: {
 		position: 'absolute', 

@@ -1,19 +1,68 @@
 import React, {Component} from 'react'
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native'
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, AsyncStorage } from 'react-native'
+import firebase from 'firebase'
 
 export default class App extends Component {
+	constructor(props) {
+		super(props);
+	
+		this.state = {
+			email: '',
+			password: '',
+			errEmail: '',
+			errPassword: '',
+		};
+	}
+
+	changeEmail = (value) => {
+		this.setState({
+			email: value,
+			errEmail: ''
+		})
+	}
+
+	changePassword = (value) => {
+		this.setState({
+			password: value,
+			errPassword: ''
+		})
+	}
+
+	loginHandler = () => {
+		this.setState({error:'', loading:true});
+	    const{email, password} = this.state;
+        
+		if (this.state.email.length < 6) {
+			this.setState({errEmail: 'Email is not valid'})
+		} else if (this.state.password.length < 6) {
+			this.setState({errPassword: 'Password too short'})
+		} else {
+	        firebase.auth().signInWithEmailAndPassword(email, password)
+	        .then( async (result) => {
+	            await this.setState({error:'', loading:false});
+	            this.props.navigation.navigate('Home');
+	        })
+	        .catch(() => {
+	            this.setState({error:'Authentication Failed', loading:false});
+	        })
+		}
+
+	}
+
 	render(){
 		return(
 			<React.Fragment>
 				<View style={text.center}>
 					<Image style={image.icon} source={require('../../assets/images/login.png')}/>
 					<View style={text.viewInput}>
-						<TextInput style={text.textInput} placeholder="Username"/>
+						<TextInput style={text.textInput} placeholder="Email" onChangeText={this.changeEmail} keyboardType={'email-address'}/>
 					</View>
+					{this.state.errEmail == '' ? <View/> : <Text style={text.validate}>{this.state.errEmail}</Text>}
 					<View style={text.viewInput}>
-						<TextInput style={text.textInput} placeholder="Password"/>
+						<TextInput secureTextEntry={true} style={text.textInput} placeholder="Password" onChangeText={this.changePassword}/>
 					</View>
-					<TouchableOpacity style={text.login} onPress={()=>this.props.navigation.navigate('Home')}>
+					{this.state.errPassword == '' ? <View/> : <Text style={text.validate}>{this.state.errPassword}</Text>}
+					<TouchableOpacity style={text.login} onPress={this.loginHandler}>
 						<Text style={{color: 'white', fontWeight: '500'}}>Log In</Text>
 					</TouchableOpacity>
 					<View style={text.bottom}>
@@ -66,6 +115,13 @@ const text = StyleSheet.create({
 	viewInput: {
 		width: '70%',
 		paddingBottom: 10,
+	},
+	validate: {
+		width: '70%',
+		paddingBottom: 10,
+		paddingLeft: 20,
+		fontSize: 10,
+		color: 'red'
 	}
 })
 

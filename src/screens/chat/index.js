@@ -11,7 +11,7 @@ export default class App extends Component {
 						<Icon name="leftcircle" size={24} color="#5ba4e5" />
 					</TouchableOpacity>
 					<View style={items.flex}>
-						<Text style={items.title}>Chat History</Text>
+						<Text style={items.title}>Chat</Text>
 					</View>
 					<View style={items.flex}>
 						
@@ -39,7 +39,7 @@ const items = StyleSheet.create({
 	},
 	title: {
 		textAlign: 'center',
-		fontSize: 20,
+		fontSize: 17,
 		fontFamily: 'sans-serif-thin'
 	}
 })
