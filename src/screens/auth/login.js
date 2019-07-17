@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, AsyncStorage } from 'react-native'
-import firebase from 'firebase'
+import firebase from 'firebase';
+import User from '../../../User';
 
 export default class App extends Component {
 	constructor(props) {
@@ -39,8 +40,8 @@ export default class App extends Component {
 		} else {
 	        firebase.auth().signInWithEmailAndPassword(email, password)
 	        .then( async (result) => {
+	        	User.email = this.state.email;
 	            await this.setState({error:'', loading:false});
-	            await firebase.database().ref('users'+ result.user.id)
 	            this.props.navigation.navigate('Home');
 	        })
 	        .catch(() => {

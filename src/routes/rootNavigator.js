@@ -6,6 +6,8 @@ import Home from '../screens/LandingPage'
 import Loading from '../screens/Loading'
 import Chat from '../screens/chat/index'
 import Personal from '../screens/chat/personal'
+import Profile from '../screens/profile/me'
+import FriendsProfile from '../screens/profile/friends'
 import DrawerNavigator from '../components/DrawerNavigator'
 
 const AuthNavigator = createStackNavigator({
@@ -20,7 +22,9 @@ const AuthNavigator = createStackNavigator({
 const HomeNavigator = createStackNavigator({
 	Home,
 	Chat,
-    Personal
+    Personal,
+    Profile,
+    FriendsProfile
 }, {
     initialRouteName: 'Home',
     headerMode: 'none'

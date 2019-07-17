@@ -6,7 +6,9 @@ export default class App extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {  };
+		this.state = { 
+			uid: ''
+		};
 	}
 
 	componentDidMount(){
@@ -21,7 +23,9 @@ export default class App extends Component {
 			appId: "1:57178564849:web:b686aea00eadc78b"
 		};
 		// Initialize Firebase
-		firebase.initializeApp(firebaseConfig);
+		if (!firebase.apps.length) {
+			firebase.initializeApp(firebaseConfig);
+		}
 
 		firebase.auth().onAuthStateChanged(user => {
 			this.props.navigation.navigate(user ? 'Home' : 'Auth')

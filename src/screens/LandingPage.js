@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, StatusBar, Dimensions } from 'react-native'
+import { Text, View, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, Image, StatusBar, Dimensions } from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import firebase from 'firebase'
 import Icon from 'react-native-vector-icons/AntDesign'
+import User from '../../User'
 
 let { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -17,19 +18,50 @@ export default class App extends Component {
 	
 	  this.state = {
 	  	currentUser: null,
+	  	pProfile: '',
+	  	uid: '',
+	  	email: '',
 	  	region: {
 	  		latitude: LATITUDE,
 	  		longitude: LONGITUDE,
 	  		latitudeDelta: LATITUDE_DELTA,
 	  		longitudeDelta: LONGITUDE_DELTA
-	  	}
+	  	},
+	  	users: []
 	  };
 	}
 
-	componentDidMount(){
-		const { currentUser } = firebase.auth()
-		this.setState({ currentUser })
+	async componentWillMount(){
+		let user = firebase.auth().currentUser;
 
+		if (user != null) {
+			await this.setState({
+				email: user.email
+			})
+		}
+
+		firebase.database().ref('users').on('child_added', (val) => {
+			let person = val.val();
+			if(person.email === this.state.email) {
+				User.email = person.email
+				User.name = person.name
+				User.profile = person.profile
+				User.data = {
+					name: person.name,
+					profile: person.profile,
+					email: person.email
+				}
+			} else {
+				this.setState((prevState)=>{
+					return{
+						users: [...prevState.users]
+					}
+				})
+			}
+		})
+	}
+
+	componentDidMount(){
 		StatusBar.setHidden(false)
 		navigator.geolocation.getCurrentPosition(
 			position => {
@@ -88,15 +120,15 @@ export default class App extends Component {
 						</View>
 						<View style={items.titleHeader}></View>
 						<View style={items.right}>
-							<View style={items.itemsProfil}>
-								<Text style={{textAlign: 'left', color: '#fff', fontFamily:'sans-serif-medium'}}>Akbar</Text>
-							</View>
+							<TouchableOpacity style={items.itemsProfil} onPress={()=>this.props.navigation.navigate('Profile')}>
+								<Text style={{textAlign: 'left', color: '#fff', fontFamily:'sans-serif-medium'}}>{User.name}</Text>
+							</TouchableOpacity>
 						</View>
 					</View>
 				</View>
-				<View style={component.profile}>
-					<Image style={image.profile} source={{uri: 'https://i.pinimg.com/originals/32/02/c6/3202c6a860015bf19424333a13b23f38.jpg'}}/>
-				</View>
+				<TouchableOpacity style={component.profile} onPress={()=>this.props.navigation.navigate('Profile')}>
+					<Image style={image.profile} source={{uri: User.profile }}/>
+				</TouchableOpacity>
 				<TouchableOpacity style={component.fab} onPress={()=>this.props.navigation.navigate('Chat')}>
 					<Icon name="message1" size={25} color='#5ba4e5'/>
 				</TouchableOpacity>

@@ -3,12 +3,6 @@ import { View, ScrollView, Text, TextInput, StyleSheet, FlatList, Image, Touchab
 import firebase from 'firebase'
 
 export default class DrawerContent extends Component {
-
-	logoutHandler = async () => {
-		await firebase.auth().signOut()
-		this.props.navigation.navigate('LogIn')
-	}
-
 	render(){
 		return (
 			<React.Fragment>
@@ -55,7 +49,7 @@ export default class DrawerContent extends Component {
 							keyExtractor = {(item) => item.id.toString()}
 							renderItem = {({item, index}) => {
 								return(
-									<TouchableOpacity style={items.flatlist} onPress={this.logoutHandler}>
+									<TouchableOpacity style={items.flatlist}>
 										<Image style={items.image} source={{uri: item.image}}/>
 										<View style={items.column}>
 											<Text style={{flex: 1, paddingLeft: 10, fontSize: 15, fontFamily: 'sans-serif-medium'}}>{item.name}<Text style={{fontFamily: 'sans-serif-thin'}}> ({item.username}) </Text></Text>
