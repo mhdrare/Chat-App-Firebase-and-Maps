@@ -56,7 +56,7 @@ export default class App extends Component {
 			} else {
 				this.setState((prevState)=>{
 					return{
-						users: [...prevState.users]
+						users: [...prevState.users, person]
 					}
 				})
 			}
@@ -109,7 +109,23 @@ export default class App extends Component {
 					region={this.state.region}
 					onRegionChange={this.onRegionChange}
 					showsUserLocation={true}>
-						<MapView.Marker coordinate={ this.state.region } title={User.name} onPress={()=>alert('Hai!')}>
+					{
+						this.state.users.map(data => (
+							<MapView.Marker 
+								coordinate={
+									{
+										latitude: data.location.latitude,
+										longitude: data.location.longitude,
+										latitudeDelta: 0.0043,
+										longitudeDelta: 0.0034
+									}
+								} 
+								title={data.name}>
+								<Image source={{uri: data.profile}} style={image.profileMaps} />
+					        </MapView.Marker>		
+						))
+					}
+						<MapView.Marker coordinate={ this.state.region } title={User.name}>
 							<Image source={{uri: User.profile}} style={image.profileMaps} />
 				        </MapView.Marker>
 				</MapView>

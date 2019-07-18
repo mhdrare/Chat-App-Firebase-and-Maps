@@ -81,7 +81,7 @@ export default class App extends Component {
 							return(
 								<View style={item.from === User.email ? items.chatme : items.chatfriend}>
 									<View style={items.column}>
-										<Text style={items.name}>{item.message}</Text>
+										<Text style={item.from === User.email ? items.msgMe : items.msgFriend}>{item.message}</Text>
 										<Text style={items.date}>{moment(item.time).format('h:mm')}</Text>
 									</View>
 								</View>
@@ -179,7 +179,16 @@ const items = StyleSheet.create({
 		justifyContent: 'center',
 		paddingRight: 5
 	},
-	name: {
+	msgMe: {
+		paddingTop: 10,
+		paddingBottom: 5,
+		paddingLeft: 5,
+		paddingRight: 5,
+		fontSize: 15, 
+		fontFamily: 'sans-serif',
+		color: '#ffffff'
+	},
+	msgFriend: {
 		paddingTop: 10,
 		paddingBottom: 5,
 		paddingLeft: 5,
