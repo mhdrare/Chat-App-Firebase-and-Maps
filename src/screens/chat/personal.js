@@ -1,9 +1,61 @@
 import React, {Component} from 'react'
-import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList, TextInput } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList, TextInput, ScrollView } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import firebase from 'firebase'
+import User from '../../../User'
 
 export default class App extends Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			textMessage: null,
+			uid: '',
+			person: {
+				uid: props.navigation.getParam('uid')
+			},
+			messageList: []
+		};
+	}
+
+	componentWillMount(){
+		firebase.database().ref('messages/')
+			.child(User.uid)
+			.child(this.state.person.uid)
+			.on('child_added', (value)=>{
+				this.setState((prevState)=>{
+					return {
+						messageList: [...prevState.messageList, value.val()]
+					}
+				})
+			})
+	}
+
+	sendMessage = async () => {
+
+		if (this.state.textMessage.length > 0) {
+			let message = firebase.database().ref(`messages`)
+				.child(User.uid)
+				.child(this.state.person.uid)
+				.push().key
+			let updates = {}
+			let msg = {
+				message: this.state.textMessage,
+				time: new Date(),
+				from: User.email
+			}
+
+			updates[`messages/${User.uid}/${this.state.person.uid}/${message}`] = msg
+			updates[`messages/${this.state.person.uid}/${User.uid}/${message}`] = msg
+			await firebase.database().ref().update(updates);
+		}
+		this.setState({
+			textMessage: null
+		})
+	}
+
+
 	render(){
 		return(
 			<React.Fragment>
@@ -12,45 +64,35 @@ export default class App extends Component {
 						<Icon name="leftcircle" size={24} color="#5ba4e5" />
 					</TouchableOpacity>
 					<View style={items.flex}>
-						<Text style={items.title}>{this.props.navigation.state.params.name}</Text>
+						<Text style={items.title}>{this.props.navigation.getParam('name')}</Text>
 					</View>
 					<View style={items.flex}>
 						
 					</View>
 				</View>
 				<View style={component.body}>
-					<FlatList
-						style = {component.chat}
-						data = {
-							[
-								{
-									id: 1,
-									name: 'Kaneki Ken',
-									username: 'kanekiken',
-									image: 'https://i.pinimg.com/originals/fe/ad/d8/feadd8d042e5b3c2ed5134c5d3b07780.jpg'
-								},
-							]
-						}
-						keyExtractor = {(item) => item.id.toString()}
-						renderItem = {({item, index}) => {
-							return(
-								<TouchableOpacity style={items.chatlist}>
-									<Image style={items.image} source={{uri: item.image}}/>
-									<View style={items.column}>
-										<Text style={items.name}>{item.name}</Text>
-										<Text style={items.person}>Kamu: <Text style={items.last}>Whoops!</Text></Text>
+					<ScrollView>
+						<FlatList
+							style = {component.chat}
+							data = {this.state.messageList}
+							renderItem = {({item, index}) => {
+								return(
+									<View style={item.from === User.email ? items.chatme : items.chatfriend}>
+										<View style={items.column}>
+											<Text style={items.name}>{item.message}</Text>
+										</View>
 									</View>
-								</TouchableOpacity>
-							)
-						}
-					}>
-						
-					</FlatList>
+								)
+							}
+						}>
+							
+						</FlatList>
+					</ScrollView>
 				</View>
 				<View style={component.footer}>
 					<View style={component.sendchat}>
-						<TextInput style={items.inputChat} placeholder="Type message"/>
-						<TouchableOpacity style={items.sendChat}>
+						<TextInput style={items.inputChat} multiline={true} placeholder="Type message" onChangeText={(value)=>this.setState({textMessage: value})}/>
+						<TouchableOpacity style={items.sendChat} onPress={this.sendMessage}>
 							<MaterialCommunityIcons name="send-circle" size={47} color="#5ba4e5"/>
 						</TouchableOpacity>
 					</View>
@@ -76,20 +118,21 @@ const component = StyleSheet.create({
 	footer: {
 		width: '100%',
 		flex: 1,
+		marginBottom: 15
 	},
 	sendchat: {
 		width: '100%',
 		flexDirection: 'row',
-		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
 		paddingLeft: 10,
 		paddingRight: 10,
-		paddingBottom: 20
 	},
 	chat: {
 		borderTopWidth: 1,
 		borderColor: '#f2f2f2',
+		paddingBottom: 20,
+		margin: 10
 	},
 })
 
@@ -102,12 +145,25 @@ const items = StyleSheet.create({
 		fontSize: 17,
 		fontFamily: 'sans-serif-thin'
 	},
-	chatlist: {
-		height: 55,
+	chatme: {
+		alignSelf: 'flex-end',
 		paddingLeft: 10,
 		flexDirection: 'row',
-		borderBottomWidth: 1,
-		borderColor: '#f2f2f2'
+		width: '70%',
+		borderBottomRightRadius: 5,
+		borderTopLeftRadius: 5,
+		borderColor: '#5ba4e5',
+		borderWidth: 1,
+		margin: 3
+	},
+	chatfriend: {
+		paddingLeft: 10,
+		flexDirection: 'row',
+		width: '70%',
+		borderBottomLeftRadius: 5,
+		borderTopRightRadius: 5,
+		backgroundColor: '#5ba4e5',
+		margin: 3
 	},
 	image: {
 		resizeMode: 'contain', 
@@ -115,16 +171,17 @@ const items = StyleSheet.create({
 		borderRadius: 500,
 	},
 	column: {
-		flexDirection: 'column',
+		flexDirection: 'row',
 		justifyContent: 'center',
-		flex: 5
+		flex: 5,
 	},
 	name: {
 		flex: 1, 
 		paddingTop: 5,
-		paddingLeft: 10, 
-		fontSize: 17, 
-		fontFamily: 'sans-serif-medium'
+		paddingBottom: 5,
+		paddingLeft: 10,
+		fontSize: 15, 
+		fontFamily: 'sans-serif'
 	},
 	last: {
 		flex: 1,

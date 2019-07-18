@@ -3,11 +3,43 @@ import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList } from 'react
 import Icon from 'react-native-vector-icons/AntDesign'
 import EvilIcons from 'react-native-vector-icons/EvilIcons'
 import firebase from 'firebase'
+import User from '../../../User'
 
 export default class App extends Component {
 
-	componentWillMount() {
-		
+	constructor(props) {
+	  super(props);
+	
+	  this.state = {
+	  	uid: '',
+	  	users: []
+	  };
+	}
+
+	async componentWillMount(){
+		let user = firebase.auth().currentUser;
+
+		if (user != null) {
+			await this.setState({
+				email: user.email,
+				uid: user.uid
+			})
+		}
+
+		firebase.database().ref('users').on('child_added', (val) => {
+			let person = val.val();
+			person.uid = val.key
+			if(person.email === this.state.email) {
+				User.email = person.email,
+				User.uid = person.uid
+			} else {
+				this.setState((prevState)=>{
+					return{
+						users: [...prevState.users, person]
+					}
+				})
+			}
+		})
 	}
 
 	render(){
@@ -18,7 +50,7 @@ export default class App extends Component {
 						<Icon name="leftcircle" size={24} color="#5ba4e5" />
 					</TouchableOpacity>
 					<View style={items.flex}>
-						<Text style={items.title}>Chat</Text>
+						<Text style={items.title}>Chats</Text>
 					</View>
 					<View style={items.flex}>
 						
@@ -27,30 +59,14 @@ export default class App extends Component {
 				<View style={component.body}>
 					<FlatList
 						style = {component.chat}
-						data = {
-							[
-								{
-									id: 1,
-									name: 'Kaneki Ken',
-									username: 'kanekiken',
-									image: 'https://i.pinimg.com/originals/fe/ad/d8/feadd8d042e5b3c2ed5134c5d3b07780.jpg'
-								},
-								{
-									id: 2,
-									name: 'Osamu Dazai',
-									username: 'dazaaii',
-									image: 'https://i.pinimg.com/originals/09/9f/ad/099fad09c76a31c5a3fa00c3d345e2ee.jpg'
-								}
-							]
-						}
-						keyExtractor = {(item) => item.id.toString()}
-						renderItem = {({item, index}) => {
+						data = {this.state.users}
+						renderItem = {({item}) => {
 							return(
-								<TouchableOpacity style={items.chatlist} onPress={()=>this.props.navigation.navigate('Personal', {name: item.name, image: item.image})}>
-									<Image style={items.image} source={{uri: item.image}}/>
+								<TouchableOpacity style={items.chatlist} onPress={()=>this.props.navigation.navigate('Personal', item)}>
+									<Image style={items.image} source={{uri: item.profile}}/>
 									<View style={items.column}>
 										<Text style={items.name}>{item.name}</Text>
-										<Text style={items.person}>Kamu: <Text style={items.last}>Whoops!</Text></Text>
+										<Text style={items.person}>You: <Text style={items.last}>Whoops!</Text></Text>
 									</View>
 									<View style={component.right}>
 										<Icon style={items.right} size={20}/>

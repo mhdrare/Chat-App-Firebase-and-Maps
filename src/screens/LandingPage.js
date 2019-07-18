@@ -36,13 +36,16 @@ export default class App extends Component {
 
 		if (user != null) {
 			await this.setState({
-				email: user.email
+				email: user.email,
+				uid: user.uid
 			})
 		}
 
 		firebase.database().ref('users').on('child_added', (val) => {
 			let person = val.val();
-			if(person.email === this.state.email) {
+			person.uid = val.key
+			if(person.uid === this.state.uid) {
+				User.uid = person.uid
 				User.email = person.email
 				User.name = person.name
 				User.profile = person.profile

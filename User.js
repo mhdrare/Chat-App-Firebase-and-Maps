@@ -1,4 +1,5 @@
 var User = {
+	uid: null,
 	email: null,
 	profile: null,
 	name: null,

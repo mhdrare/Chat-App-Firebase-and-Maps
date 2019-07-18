@@ -1,8 +1,45 @@
 import React, { Component } from 'react'
 import { View, ScrollView, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native'
 import firebase from 'firebase'
+import User from '../../User'
 
 export default class DrawerContent extends Component {
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			uid: '',
+			users: []
+		};
+	}
+
+	async componentWillMount(){
+		let user = firebase.auth().currentUser;
+
+		if (user != null) {
+			await this.setState({
+				email: user.email,
+				uid: user.uid
+			})
+		}
+
+		firebase.database().ref('users').on('child_added', (val) => {
+			let person = val.val()
+			person.uid = val.key
+			if(person.uid === this.state.uid) {
+				User.email = person.email
+				User.uid = person.uid
+			} else {
+				this.setState((prevState)=>{
+					return{
+						users: [...prevState.users, person]
+					}
+				})
+			}
+		})
+	}
+
 	render(){
 		return (
 			<React.Fragment>
@@ -18,41 +55,13 @@ export default class DrawerContent extends Component {
 					<View style={component.friendlist}>
 						<FlatList
 							style = {component.flatlist}
-							data = {
-								[
-									{
-										id: 1,
-										name: 'Kaneki Ken',
-										username: 'kanekiken',
-										image: 'https://i.pinimg.com/originals/fe/ad/d8/feadd8d042e5b3c2ed5134c5d3b07780.jpg'
-									},
-									{
-										id: 2,
-										name: 'Osamu Dazai',
-										username: 'dazaaii',
-										image: 'https://i.pinimg.com/originals/09/9f/ad/099fad09c76a31c5a3fa00c3d345e2ee.jpg'
-									},
-									{
-										id: 3,
-										name: 'Deku',
-										username: 'dekukude',
-										image: 'https://i.pinimg.com/originals/42/b8/55/42b8552331f0834ecfc3eb383fef550a.jpg'
-									},
-									{
-										id: 4,
-										name: 'Hiroomi Nase',
-										username: 'nanase',
-										image: 'https://i.pinimg.com/originals/62/2b/01/622b0185a3023b7293ca01da64cc3a22.jpg'
-									},
-								]
-							}
-							keyExtractor = {(item) => item.id.toString()}
+							data = { this.state.users }
 							renderItem = {({item, index}) => {
 								return(
 									<TouchableOpacity style={items.flatlist}>
-										<Image style={items.image} source={{uri: item.image}}/>
+										<Image style={items.image} source={{uri: item.profile}}/>
 										<View style={items.column}>
-											<Text style={{flex: 1, paddingLeft: 10, fontSize: 15, fontFamily: 'sans-serif-medium'}}>{item.name}<Text style={{fontFamily: 'sans-serif-thin'}}> ({item.username}) </Text></Text>
+											<Text style={{flex: 1, paddingLeft: 10, fontSize: 15, fontFamily: 'sans-serif-medium'}}>{item.name}<Text style={{fontFamily: 'sans-serif-thin'}}> ({item.email}) </Text></Text>
 											<Text style={items.status}>online</Text>
 										</View>
 									</TouchableOpacity>
