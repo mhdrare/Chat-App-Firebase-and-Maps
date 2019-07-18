@@ -3,12 +3,13 @@ import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList, TextInput } 
 import Icon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import firebase from 'firebase'
+import User from '../../../User'
 
 export default class App extends Component {
 
 	logoutHandler = async () => {
 		await firebase.auth().signOut()
-		this.props.navigation.navigate('LogIn')
+		this.props.navigation.navigate('Loading')
 	}
 
 	render(){
@@ -26,7 +27,20 @@ export default class App extends Component {
 					</TouchableOpacity>
 				</View>
 				<View style={component.body}>
-					
+					<View style={component.top}>
+						<Image style={items.image} source={{uri: User.profile}}/>
+						<View style={component.data}>
+							<TouchableOpacity style={component.setting}>
+								<MaterialCommunityIcons name="circle-edit-outline" size={20}/>
+							</TouchableOpacity>
+							<View style={component.dataName}>
+								<Text style={items.name}>{User.name}</Text>
+							</View>
+							<View style={component.dataEmail}>
+								<Text numberOfLines={1} style={items.email}>{User.email}</Text>
+							</View>
+						</View>
+					</View>	
 				</View>
 			</React.Fragment>
 		)
@@ -46,6 +60,33 @@ const component = StyleSheet.create({
 		width: '100%',
 		flex: 10,
 	},
+	top: {
+		alignSelf: 'center',
+		width: '80%',
+		height: 150,
+		flexDirection: 'row',
+	},
+	data: {
+		flex: 1,
+		justifyContent: 'center',
+		flexDirection: 'column',
+		height: '100%',
+		marginLeft: 5,
+	},
+	dataName: {
+		backgroundColor: '#5ba4e5',
+		height: 30,
+		borderTopLeftRadius: 10
+	},
+	dataEmail: {
+		backgroundColor: '#5ba4e5',
+		height: 30,
+		borderBottomRightRadius: 10
+	},
+	setting: {
+		alignSelf: 'flex-end',
+		marginBottom: 3
+	}
 })
 
 const items = StyleSheet.create({
@@ -70,7 +111,7 @@ const items = StyleSheet.create({
 	},
 	image: {
 		resizeMode: 'contain', 
-		width: 45, 
+		width: 100,
 		borderRadius: 500,
 	},
 	column: {
@@ -80,10 +121,19 @@ const items = StyleSheet.create({
 	},
 	name: {
 		flex: 1, 
-		paddingTop: 5,
+		paddingTop: 3,
 		paddingLeft: 10, 
-		fontSize: 17, 
-		fontFamily: 'sans-serif-medium'
+		fontSize: 14,
+		fontFamily: 'sans-serif-medium',
+		color: '#ffffff'
+	},
+	email: {
+		flex: 1, 
+		paddingTop: 3,
+		paddingLeft: 10, 
+		fontSize: 13,
+		fontFamily: 'sans-serif-thin',
+		color: '#ffffff'
 	},
 	last: {
 		flex: 1,

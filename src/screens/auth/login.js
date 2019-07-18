@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, AsyncStorage } from 'react-native'
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, AsyncStorage, ActivityIndicator } from 'react-native'
 import firebase from 'firebase';
 import User from '../../../User';
 
@@ -65,7 +65,7 @@ export default class App extends Component {
 					</View>
 					{this.state.errPassword == '' ? <View/> : <Text style={text.validate}>{this.state.errPassword}</Text>}
 					<TouchableOpacity style={text.login} onPress={this.loginHandler}>
-						<Text style={{color: 'white', fontWeight: '500'}}>Log In</Text>
+					{this.state.loading ? <ActivityIndicator size="large" color="#ffffff"/> : <Text style={{color: 'white', fontWeight: '500'}}>Log In</Text>}
 					</TouchableOpacity>
 					<View style={text.bottom}>
 						<Text>

@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList, TextInput, S
 import Icon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import firebase from 'firebase'
+import moment from 'moment'
 import User from '../../../User'
 
 export default class App extends Component {
@@ -26,7 +27,7 @@ export default class App extends Component {
 			.on('child_added', (value)=>{
 				this.setState((prevState)=>{
 					return {
-						messageList: [...prevState.messageList, value.val()]
+						messageList: [value.val(), ...prevState.messageList]
 					}
 				})
 			})
@@ -46,13 +47,14 @@ export default class App extends Component {
 				from: User.email
 			}
 
+			this.setState({ textMessage: '' })
+
 			updates[`messages/${User.uid}/${this.state.person.uid}/${message}`] = msg
 			updates[`messages/${this.state.person.uid}/${User.uid}/${message}`] = msg
 			await firebase.database().ref().update(updates);
+
 		}
-		this.setState({
-			textMessage: null
-		})
+		
 	}
 
 
@@ -71,27 +73,27 @@ export default class App extends Component {
 					</View>
 				</View>
 				<View style={component.body}>
-					<ScrollView>
-						<FlatList
-							style = {component.chat}
-							data = {this.state.messageList}
-							renderItem = {({item, index}) => {
-								return(
-									<View style={item.from === User.email ? items.chatme : items.chatfriend}>
-										<View style={items.column}>
-											<Text style={items.name}>{item.message}</Text>
-										</View>
+					<FlatList
+						inverted
+						style = {component.chat}
+						data = {this.state.messageList}
+						renderItem = {({item, index}) => {
+							return(
+								<View style={item.from === User.email ? items.chatme : items.chatfriend}>
+									<View style={items.column}>
+										<Text style={items.name}>{item.message}</Text>
+										<Text style={items.date}>{moment(item.time).format('h:mm')}</Text>
 									</View>
-								)
-							}
-						}>
-							
-						</FlatList>
-					</ScrollView>
+								</View>
+							)
+						}
+					}>
+						
+					</FlatList>
 				</View>
 				<View style={component.footer}>
 					<View style={component.sendchat}>
-						<TextInput style={items.inputChat} multiline={true} placeholder="Type message" onChangeText={(value)=>this.setState({textMessage: value})}/>
+						<TextInput style={items.inputChat} multiline={true} placeholder="Type message" value={this.state.textMessage} onChangeText={(value)=>this.setState({textMessage: value})}/>
 						<TouchableOpacity style={items.sendChat} onPress={this.sendMessage}>
 							<MaterialCommunityIcons name="send-circle" size={47} color="#5ba4e5"/>
 						</TouchableOpacity>
@@ -112,7 +114,6 @@ const component = StyleSheet.create({
 		alignItems: 'center'
 	},
 	body: {
-		width: '100%',
 		flex: 10,
 	},
 	footer: {
@@ -149,20 +150,23 @@ const items = StyleSheet.create({
 		alignSelf: 'flex-end',
 		paddingLeft: 10,
 		flexDirection: 'row',
-		width: '70%',
-		borderBottomRightRadius: 5,
-		borderTopLeftRadius: 5,
-		borderColor: '#5ba4e5',
-		borderWidth: 1,
+		maxWidth: '80%',
+		borderBottomRightRadius: 15,
+		borderBottomLeftRadius: 15,
+		borderTopLeftRadius: 15,
+		backgroundColor: '#5ba4e5',
 		margin: 3
 	},
 	chatfriend: {
+		alignSelf: 'flex-start',
 		paddingLeft: 10,
 		flexDirection: 'row',
-		width: '70%',
-		borderBottomLeftRadius: 5,
-		borderTopRightRadius: 5,
-		backgroundColor: '#5ba4e5',
+		maxWidth: '80%',
+		borderBottomLeftRadius: 15,
+		borderBottomRightRadius: 15,
+		borderTopRightRadius: 15,
+		borderColor: '#5ba4e5',
+		borderWidth: 1,
 		margin: 3
 	},
 	image: {
@@ -171,15 +175,15 @@ const items = StyleSheet.create({
 		borderRadius: 500,
 	},
 	column: {
-		flexDirection: 'row',
+		flexDirection: 'column',
 		justifyContent: 'center',
-		flex: 5,
+		paddingRight: 5
 	},
 	name: {
-		flex: 1, 
-		paddingTop: 5,
+		paddingTop: 10,
 		paddingBottom: 5,
-		paddingLeft: 10,
+		paddingLeft: 5,
+		paddingRight: 5,
 		fontSize: 15, 
 		fontFamily: 'sans-serif'
 	},
@@ -202,5 +206,11 @@ const items = StyleSheet.create({
 	},
 	sendChat: {
 		flex: 1
+	},
+	date: {
+		alignSelf: 'flex-end',
+		paddingRight: 10,
+		paddingBottom: 5,
+		fontSize: 12
 	}
 })

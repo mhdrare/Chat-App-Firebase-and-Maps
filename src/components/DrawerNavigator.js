@@ -61,7 +61,7 @@ export default class DrawerContent extends Component {
 									<TouchableOpacity style={items.flatlist}>
 										<Image style={items.image} source={{uri: item.profile}}/>
 										<View style={items.column}>
-											<Text style={{flex: 1, paddingLeft: 10, fontSize: 15, fontFamily: 'sans-serif-medium'}}>{item.name}<Text style={{fontFamily: 'sans-serif-thin'}}> ({item.email}) </Text></Text>
+											<Text numberOfLines={1} style={{flex: 1, paddingLeft: 10, fontSize: 15, fontFamily: 'sans-serif-medium'}}>{item.name}</Text>
 											<Text style={items.status}>online</Text>
 										</View>
 									</TouchableOpacity>
@@ -82,7 +82,8 @@ const items = StyleSheet.create({
 		flexDirection: 'column'
 	},
 	status: {
-		flex: 1, 
+		flex: 1,
+		fontSize: 12, 
 		paddingLeft: 10,
 		fontFamily: 'sans-serif-thin'
 	},
@@ -103,7 +104,7 @@ const items = StyleSheet.create({
 		borderBottomRightRadius: 10,
 	},
 	image: {
-		resizeMode: 'contain', 
+		resizeMode: 'contain',
 		width: 35, 
 		borderRadius: 500, 
 		backgroundColor: '#5ba4e5'

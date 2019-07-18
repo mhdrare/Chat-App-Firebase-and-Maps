@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, Image, StatusBar, Dimensions } from 'react-native'
+import { Text, View, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, Image, StatusBar, Dimensions, FlatList } from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import firebase from 'firebase'
 import Icon from 'react-native-vector-icons/AntDesign'
@@ -41,7 +41,7 @@ export default class App extends Component {
 			})
 		}
 
-		firebase.database().ref('users').on('child_added', (val) => {
+		await firebase.database().ref('users').on('child_added', (val) => {
 			let person = val.val();
 			person.uid = val.key
 			if(person.uid === this.state.uid) {
@@ -49,10 +49,9 @@ export default class App extends Component {
 				User.email = person.email
 				User.name = person.name
 				User.profile = person.profile
-				User.data = {
-					name: person.name,
-					profile: person.profile,
-					email: person.email
+				User.location = {
+					latitude: person.location.latitude,
+					longitude: person.location.longitude
 				}
 			} else {
 				this.setState((prevState)=>{
@@ -108,10 +107,11 @@ export default class App extends Component {
 					provider={PROVIDER_GOOGLE}
 					style={{flex: 1}}
 					region={this.state.region}
+					onRegionChange={this.onRegionChange}
 					showsUserLocation={true}>
-					<MapView.Marker
-			        	coordinate={ this.state.region }
-			        />
+						<MapView.Marker coordinate={ this.state.region } title={User.name} onPress={()=>alert('Hai!')}>
+							<Image source={{uri: User.profile}} style={image.profileMaps} />
+				        </MapView.Marker>
 				</MapView>
 				<View style={component.top}></View>
 				<View style={component.header}>
@@ -197,7 +197,16 @@ const image = StyleSheet.create({
 		height: 50, 
 		borderRadius: 50,
 		borderWidth: 1,
-		borderColor: '#5ba4e5'
+		borderColor: '#5ba4e5',
+		backgroundColor: '#5ba4e5'
+	},
+	profileMaps: {
+		width: 50, 
+		height: 50, 
+		borderRadius: 50,
+		borderWidth: 1,
+		borderColor: '#5ba4e5',
+		backgroundColor: '#5ba4e5'
 	}
 })
 
