@@ -3,13 +3,14 @@ import { Text, View, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity,
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import firebase from 'firebase'
 import Icon from 'react-native-vector-icons/AntDesign'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import User from '../../User'
 
 let { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE = 0;
 const LONGITUDE = 0;
-const LATITUDE_DELTA = 0.0922;
+const LATITUDE_DELTA = 0.0092;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default class App extends Component {
@@ -29,6 +30,15 @@ export default class App extends Component {
 	  	},
 	  	users: []
 	  };
+	}
+
+	_updateLocation = _ => {
+		firebase.database().ref('users/' + User.uid).update({
+			location: {
+				latitude: this.state.region.latitude,
+				longitude: this.state.region.longitude
+			}
+		})
 	}
 
 	async componentWillMount(){
@@ -100,10 +110,20 @@ export default class App extends Component {
 		navigator.geolocation.clearWatch(this.watchID)
 	}
 
+	componentWillUpdate() {
+		firebase.database().ref('users/' + this.state.uid ).update({
+			location: {
+				latitude: this.state.region.latitude,
+				longitude: this.state.region.longitude
+			}
+		})
+	}
+
 	render(){
 		return(
 			<React.Fragment>
 				<MapView
+					ref={(MapView) => {_mapView = MapView}}
 					provider={PROVIDER_GOOGLE}
 					style={{flex: 1}}
 					region={this.state.region}
@@ -119,14 +139,14 @@ export default class App extends Component {
 										latitudeDelta: 0.0043,
 										longitudeDelta: 0.0034
 									}
-								} 
-								title={data.name}>
-								<Image source={{uri: data.profile}} style={image.profileMaps} />
+								}
+								title={data.name}
+								description={'Hello there! I am using MeMes.'}>
 					        </MapView.Marker>		
 						))
 					}
 						<MapView.Marker coordinate={ this.state.region } title={User.name}>
-							<Image source={{uri: User.profile}} style={image.profileMaps} />
+						{/**	<Image source={{uri: User.profile}} style={image.profileMaps} /> **/}
 				        </MapView.Marker>
 				</MapView>
 				<View style={component.top}></View>
@@ -137,7 +157,16 @@ export default class App extends Component {
 								<Text style={{textAlign: 'center', color: '#fff', fontFamily:'sans-serif-medium'}}>Friends</Text>
 							</TouchableOpacity>
 						</View>
-						<View style={items.titleHeader}></View>
+						<View style={items.titleHeader}>
+							<TouchableOpacity onPress={()=>_mapView.animateToRegion({
+								latitude: this.state.region.latitude,
+								longitude: this.state.region.longitude,
+								latitudeDelta: LATITUDE_DELTA,
+							  	longitudeDelta: LONGITUDE_DELTA
+							})}>
+								<FontAwesome name="crosshairs" size={20}/>
+							</TouchableOpacity>
+						</View>
 						<View style={items.right}>
 							<TouchableOpacity style={items.itemsProfil} onPress={()=>this.props.navigation.navigate('Profile')}>
 								<Text style={{textAlign: 'left', color: '#fff', fontFamily:'sans-serif-medium'}}>{User.name}</Text>
@@ -188,7 +217,7 @@ const items = StyleSheet.create({
 		color: '#5ba4e5',
 		fontSize: 17,
 		flex: 5,
-		textAlign: 'center',
+		alignItems: 'center',
 		fontFamily: 'sans-serif-medium'
 	},
 	listFriends: {
@@ -235,7 +264,7 @@ const component = StyleSheet.create({
 	},
 	header: {
 		position: 'absolute',
-		top: 50,
+		top: 10,
 		height: 50,
 		width: '100%',
 		flexDirection: 'row',
@@ -249,7 +278,7 @@ const component = StyleSheet.create({
 	profile: {
 		position: 'absolute',
 		right: 3,
-		top: 50,
+		top: 10,
 	},
 	fab: {
 		position: 'absolute', 

@@ -119,7 +119,7 @@ export default class App extends Component {
 	            this.props.navigation.navigate('Home');
 	        })
 	        .catch(() => {
-	            alert(error)
+	            alert('Register failed!')
 	        })
 		}
 	}

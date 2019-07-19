@@ -58,7 +58,7 @@ export default class DrawerContent extends Component {
 							data = { this.state.users }
 							renderItem = {({item, index}) => {
 								return(
-									<TouchableOpacity style={items.flatlist}>
+									<TouchableOpacity style={items.flatlist} onPress={() => this.props.navigation.navigate('FriendsProfile', item)}>
 										<Image style={items.image} source={{uri: item.profile}}/>
 										<View style={items.column}>
 											<Text numberOfLines={1} style={{flex: 1, paddingLeft: 10, fontSize: 15, fontFamily: 'sans-serif-medium'}}>{item.name}</Text>

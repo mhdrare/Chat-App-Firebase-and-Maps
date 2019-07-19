@@ -12,6 +12,7 @@ export default class App extends Component {
 			password: '',
 			errEmail: '',
 			errPassword: '',
+			loading: false
 		};
 	}
 
@@ -40,12 +41,13 @@ export default class App extends Component {
 		} else {
 	        firebase.auth().signInWithEmailAndPassword(email, password)
 	        .then( async (result) => {
-	        	User.email = this.state.email;
-	            await this.setState({error:'', loading:false});
-	            this.props.navigation.navigate('Home');
+	        	User.email = this.state.email
+	            await this.setState({error:'', loading:false})
+	            this.props.navigation.navigate('Home')
 	        })
 	        .catch(() => {
-	            this.setState({error:'Authentication Failed', loading:false});
+	            this.setState({loading:false})
+	            alert('Login Failed!')
 	        })
 		}
 

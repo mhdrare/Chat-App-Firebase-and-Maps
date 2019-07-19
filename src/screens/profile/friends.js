@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList, TextInput } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import firebase from 'firebase'
+import User from '../../../User'
 
 export default class App extends Component {
 	render(){
@@ -12,48 +14,21 @@ export default class App extends Component {
 						<Icon name="leftcircle" size={24} color="#5ba4e5" />
 					</TouchableOpacity>
 					<View style={items.flex}>
-						<Text style={items.title}>{this.props.navigation.state.params.name}</Text>
-					</View>
-					<View style={items.flex}>
 						
 					</View>
+					<TouchableOpacity style={items.out}>
+						
+					</TouchableOpacity>
 				</View>
 				<View style={component.body}>
-					<FlatList
-						style = {component.chat}
-						data = {
-							[
-								{
-									id: 1,
-									name: 'Kaneki Ken',
-									username: 'kanekiken',
-									image: 'https://i.pinimg.com/originals/fe/ad/d8/feadd8d042e5b3c2ed5134c5d3b07780.jpg'
-								},
-							]
-						}
-						keyExtractor = {(item) => item.id.toString()}
-						renderItem = {({item, index}) => {
-							return(
-								<TouchableOpacity style={items.chatlist}>
-									<Image style={items.image} source={{uri: item.image}}/>
-									<View style={items.column}>
-										<Text style={items.name}>{item.name}</Text>
-										<Text style={items.person}>Kamu: <Text style={items.last}>Whoops!</Text></Text>
-									</View>
-								</TouchableOpacity>
-							)
-						}
-					}>
-						
-					</FlatList>
-				</View>
-				<View style={component.footer}>
-					<View style={component.sendchat}>
-						<TextInput style={items.inputChat} placeholder="Type message"/>
-						<TouchableOpacity style={items.sendChat}>
-							<MaterialCommunityIcons name="send-circle" size={47} color="#5ba4e5"/>
-						</TouchableOpacity>
-					</View>
+					<View style={component.top}>
+						<Image style={items.image} source={{uri: this.props.navigation.state.params.profile}}/>
+						<View style={component.data}>
+							<View style={component.dataName}>
+								<Text style={items.name}>{this.props.navigation.state.params.name}</Text>
+							</View>
+						</View>
+					</View>	
 				</View>
 			</React.Fragment>
 		)
@@ -72,30 +47,48 @@ const component = StyleSheet.create({
 	body: {
 		width: '100%',
 		flex: 10,
+		backgroundColor: '#5ba4e5'
 	},
-	footer: {
+	top: {
+		alignSelf: 'center',
 		width: '100%',
-		flex: 1,
-	},
-	sendchat: {
-		width: '100%',
+		paddingLeft: 30,
+		paddingRight: 30,
+		height: 150,
 		flexDirection: 'row',
+		backgroundColor: '#ffffff'
+	},
+	data: {
 		flex: 1,
-		alignItems: 'center',
 		justifyContent: 'center',
-		paddingLeft: 10,
-		paddingRight: 10,
-		paddingBottom: 20
+		flexDirection: 'column',
+		height: '100%',
+		marginLeft: -10,
+		zIndex: -10,
 	},
-	chat: {
-		borderTopWidth: 1,
-		borderColor: '#f2f2f2',
+	dataName: {
+		height: 30,
+		borderTopRightRadius: 10,
+		borderBottomRightRadius: 10
 	},
+	dataEmail: {
+		backgroundColor: '#5ba4e5',
+		height: 30,
+		borderBottomRightRadius: 10
+	},
+	setting: {
+		alignSelf: 'flex-end',
+		marginBottom: 3
+	}
 })
 
 const items = StyleSheet.create({
 	flex: {
 		flex: 1,
+	},
+	out: {
+		flex: 1,
+		alignItems: 'flex-end'
 	},
 	title: {
 		textAlign: 'center',
@@ -111,8 +104,9 @@ const items = StyleSheet.create({
 	},
 	image: {
 		resizeMode: 'contain', 
-		width: 45, 
+		width: 100,
 		borderRadius: 500,
+		marginLeft: 5
 	},
 	column: {
 		flexDirection: 'column',
@@ -120,11 +114,20 @@ const items = StyleSheet.create({
 		flex: 5
 	},
 	name: {
+		flex: 1,
+		paddingTop: 3,
+		paddingLeft: 25, 
+		fontSize: 19,
+		fontFamily: 'sans-serif-medium',
+		color: '#5ba4e5'
+	},
+	email: {
 		flex: 1, 
-		paddingTop: 5,
+		paddingTop: 3,
 		paddingLeft: 10, 
-		fontSize: 17, 
-		fontFamily: 'sans-serif-medium'
+		fontSize: 13,
+		fontFamily: 'sans-serif-thin',
+		color: '#ffffff'
 	},
 	last: {
 		flex: 1,
