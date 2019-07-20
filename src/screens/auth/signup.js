@@ -107,7 +107,7 @@ export default class App extends Component {
 	            await this.setState({errMessage: '', loading: false});
 	            await firebase.database().ref('users/'+ result.user.uid)
 	            	.set({
-	            		name: this.state.name, 
+	            		name: this.state.name,
 	            		email: this.state.email,
 	            		profile: this.state.image, 
 	            		location: {

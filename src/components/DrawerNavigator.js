@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
-import { View, ScrollView, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native'
+import { View, ScrollView, Dimensions, Text, TextInput, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native'
 import firebase from 'firebase'
 import User from '../../User'
+
+let { width, height } = Dimensions.get('window');
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0092;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default class DrawerContent extends Component {
 
@@ -40,6 +45,17 @@ export default class DrawerContent extends Component {
 		})
 	}
 
+	_trackFriends = async (item) => {
+		await _mapView.animateToRegion({
+			latitude: item.location.latitude,
+			longitude: item.location.longitude,
+			latitudeDelta: LATITUDE_DELTA,
+		  	longitudeDelta: LONGITUDE_DELTA
+		})
+
+		this.props.navigation.closeDrawer()
+	}
+
 	render(){
 		return (
 			<React.Fragment>
@@ -58,7 +74,16 @@ export default class DrawerContent extends Component {
 							data = { this.state.users }
 							renderItem = {({item, index}) => {
 								return(
-									<TouchableOpacity style={items.flatlist} onPress={() => this.props.navigation.navigate('FriendsProfile', item)}>
+									<TouchableOpacity 
+											style={items.flatlist} 
+											onPress={() => this.props.navigation.navigate('FriendsProfile', item)}
+											onLongPress={() => _mapView.animateToRegion({
+												latitude: item.location.latitude,
+												longitude: item.location.longitude,
+												latitudeDelta: LATITUDE_DELTA,
+											  	longitudeDelta: LONGITUDE_DELTA
+											})
+										}>
 										<Image style={items.image} source={{uri: item.profile}}/>
 										<View style={items.column}>
 											<Text numberOfLines={1} style={{flex: 1, paddingLeft: 10, fontSize: 15, fontFamily: 'sans-serif-medium'}}>{item.name}</Text>
