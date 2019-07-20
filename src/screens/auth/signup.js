@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, Alert, AsyncStorage } from 'react-native'
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native'
 import firebase from 'firebase'
 
 const LATITUDE = 0;
@@ -26,7 +26,8 @@ export default class App extends Component {
 			}
 		};
 	}
-
+	
+    // get current position
 	componentDidMount() {
 		navigator.geolocation.getCurrentPosition(
 			position => {
@@ -94,13 +95,13 @@ export default class App extends Component {
         const{email, password} = this.state;
         
 		if (this.state.name == '') {
-			this.setState({errName: 'Fill your name!'})
+			this.setState({errName: 'Fill your name!', loading: false})
 		} else if (this.state.email.length < 6) {
-			this.setState({errEmail: 'Email is not valid'})
+			this.setState({errEmail: 'Email is not valid', loading: false})
 		} else if (this.state.password.length < 6) {
-			this.setState({errPassword: 'Password too short'})
+			this.setState({errPassword: 'Password too short', loading: false})
 		} else if (this.state.password !== this.state.confirmPassword) {
-			this.setState({errPassword: 'Password not match'})
+			this.setState({errPassword: 'Password not match', loading: false})
 		} else {
 			firebase.auth().createUserWithEmailAndPassword(email, password)
 	        .then(async (result) => {

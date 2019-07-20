@@ -35,9 +35,9 @@ export default class App extends Component {
 	    const{email, password} = this.state;
         
 		if (this.state.email.length < 6) {
-			this.setState({errEmail: 'Email is not valid'})
+			this.setState({errEmail: 'Email is not valid', loading: false})
 		} else if (this.state.password.length < 6) {
-			this.setState({errPassword: 'Password too short'})
+			this.setState({errPassword: 'Password too short', loading: false})
 		} else {
 	        firebase.auth().signInWithEmailAndPassword(email, password)
 	        .then( async (result) => {
